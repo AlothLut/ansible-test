@@ -7,6 +7,7 @@ services:
         hostname: admin_host
         volumes:
             - ./ssh_pub:/var/ssh_pub
+            - ./ansible:/home/admin/ansible
         networks:
             app_net:
                 ipv4_address: 172.16.1.2

@@ -3,7 +3,10 @@ FROM ubuntu:20.04
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-server \
     nano \
-    sudo
+    python3 \ 
+    sudo \
+    #remove cache:
+    && rm -rf /var/lib/apt/lists/* 
 
 RUN groupadd -g 1000 client_host
 RUN useradd -u 1000 -ms /bin/bash -g client_host client_host
