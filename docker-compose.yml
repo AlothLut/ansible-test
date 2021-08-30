@@ -5,6 +5,8 @@ services:
         build: ./admin_host/
         container_name: admin_host
         hostname: admin_host
+        env_file:
+            - ./.env
         volumes:
             - ./ssh_pub:/var/ssh_pub
             - ./ansible:/home/admin/ansible
@@ -24,6 +26,8 @@ services:
         networks:
             app_net:
                 ipv4_address: 172.16.1.3
+        ports:
+            - 8081:80 #nginx
 
     client_host_02:
         build: ./client_host/
@@ -36,6 +40,8 @@ services:
         networks:
             app_net:
                 ipv4_address: 172.16.1.4
+        ports:
+            - 8082:80 #nginx
 
     client_host_03:
         build: ./client_host/
@@ -48,6 +54,8 @@ services:
         networks:
             app_net:
                 ipv4_address: 172.16.1.5
+        ports:
+            - 8083:80 #nginx
 
 
 networks:

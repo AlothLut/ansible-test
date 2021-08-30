@@ -1,0 +1,4 @@
+---
+
+ansible_user                 : client_host
+ansible_ssh_private_key_file : /home/admin/.ssh/id_rsa

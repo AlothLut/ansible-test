@@ -8,13 +8,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     #remove cache:
     && rm -rf /var/lib/apt/lists/* 
 
-RUN groupadd -g 1000 client_host
-RUN useradd -u 1000 -ms /bin/bash -g client_host client_host
+RUN useradd -m client_host && echo "client_host:client_host" | chpasswd && adduser client_host sudo \
+&& echo "client_host  ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/client_host
 USER client_host
 RUN ssh-keygen -q -t rsa -N '' -f /home/client_host/.ssh/id_rsa
 
-USER root
-RUN service ssh start
 EXPOSE 22
+USER root
+RUN /etc/init.d/ssh start
 
-CMD ["/usr/sbin/sshd","-D"]
+CMD ["/usr/sbin/sshd", "-D"]

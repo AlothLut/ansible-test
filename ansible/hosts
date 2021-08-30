@@ -1,3 +1,10 @@
-client_host_01 ansible_host=172.16.1.3 ansible_user=client_host ansible_ssh_private_key_file=/home/admin/.ssh/id_rsa
-client_host_02 ansible_host=172.16.1.4 ansible_user=client_host ansible_ssh_private_key_file=/home/admin/.ssh/id_rsa
-client_host_03 ansible_host=172.16.1.5 ansible_user=client_host ansible_ssh_private_key_file=/home/admin/.ssh/id_rsa
+[LEMP_server]
+client_host_01 ansible_host=172.16.1.3
+client_host_03 ansible_host=172.16.1.5
+
+[DJANGO_server]
+client_host_02 ansible_host=172.16.1.4
+
+[SERVERS:children]
+LEMP_server
+DJANGO_server

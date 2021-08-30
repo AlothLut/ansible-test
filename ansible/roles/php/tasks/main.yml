@@ -1,0 +1,22 @@
+---
+
+- name: "Install php-fpm"
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    update-cache: true
+  loop:
+      - "php7.4-fpm"
+      - "php7.4-mysql"
+
+- name: "Copy php index files"
+  ansible.builtin.template:
+    src: "index.j2"
+    dest: "/var/www/site/index.php"
+    owner: "client_host"
+    group: "client_host"
+    mode: "0644"
+
+- name: "Start php-fpm"
+  ansible.builtin.service:
+    name: php7.4-fpm
+    state: started

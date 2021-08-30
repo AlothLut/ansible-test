@@ -1,0 +1,13 @@
+########
+# LEMP #
+########
+
+---
+
+- name: "Install LEMP stack"
+  hosts: "LEMP_server"
+  become: "yes"
+  roles:
+    - nginx
+    - mysql
+    - php
