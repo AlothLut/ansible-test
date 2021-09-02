@@ -1,0 +1,22 @@
+---
+
+- include_vars:
+    file: "{{ role_path }}/../django/vars/main.yml" # get project path
+
+- name: "Instal Gunicorn"
+  ansible.builtin.pip:
+    name: "gunicorn"
+    virtualenv: "{{project_name_path}}/env"
+    virtualenv_command: "virtualenv"
+    virtualenv_python: "python3"
+
+- name: "Check gunicorn process"
+  shell: ps aux | grep gunicorn
+  register: "checkgunicorn"
+  ignore_errors: "yes"
+  changed_when: false
+
+- name: "Start Gunicorn.socket"
+  shell: "/home/client_host/app/env/bin/gunicorn -D --chdir /home/client_host/app \
+  --bind unix:/run/gunicorn.sock {{project_name}}.wsgi:application"
+  when: checkgunicorn.stdout == ""

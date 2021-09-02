@@ -23,27 +23,27 @@ fi
 echo -e "\e[1;34m Build containers \e[0m"
 sudo docker-compose up -d --build
 
-until docker ps | grep "client_host*"; do
+until docker ps | grep "client-host*"; do
     echo "w8 client hosts..."
     sleep 3;
 done
 
-docker-compose exec -T --user root admin_host bash -c "cat /home/admin/.ssh/id_rsa.pub > /var/ssh_pub/id_rsa.pub \
+docker-compose exec -T --user root admin-host bash -c "cat /home/admin/.ssh/id_rsa.pub > /var/ssh_pub/id_rsa.pub \
     && chmod 400 /home/admin/.ssh/id_rsa*"
-docker-compose exec -T client_host_01 bash -c "cat /var/ssh_pub/id_rsa.pub >> /home/client_host/.ssh/authorized_keys"
-docker-compose exec -T client_host_02 bash -c "cat /var/ssh_pub/id_rsa.pub >> /home/client_host/.ssh/authorized_keys"
-docker-compose exec -T client_host_03 bash -c "cat /var/ssh_pub/id_rsa.pub >> /home/client_host/.ssh/authorized_keys"
+docker-compose exec -T client-host-01 bash -c "cat /var/ssh_pub/id_rsa.pub >> /home/client_host/.ssh/authorized_keys"
+docker-compose exec -T client-host-02 bash -c "cat /var/ssh_pub/id_rsa.pub >> /home/client_host/.ssh/authorized_keys"
+docker-compose exec -T client-host-03 bash -c "cat /var/ssh_pub/id_rsa.pub >> /home/client_host/.ssh/authorized_keys"
 
 echo -e "\e[1;34m SSH configs has been created\e[0m"
 
-docker-compose exec -T --user admin admin_host bash -c "ansible-galaxy collection install community.mysql"
+docker-compose exec -T --user admin admin-host bash -c "ansible-galaxy collection install community.mysql"
 
 echo -e "\e[1;34m Additional ansible-modules installed\e[0m"
 
 
-echo -e "\e[1;34m Add to /etc/hosts new rules\e[0m"
+echo -e "\e[1;34m Added to /etc/hosts new rules\e[0m"
 
 for i in {1..3}
 do
-   sudo grep -qxF "172.16.1.1 client_host_0$i" /etc/hosts || echo "172.16.1.1 client_host_0$i" | sudo tee -a /etc/hosts
+   sudo grep -qxF "172.16.1.1 client-host-0$i" /etc/hosts || echo "172.16.1.1 client-host-0$i" | sudo tee -a /etc/hosts
 done

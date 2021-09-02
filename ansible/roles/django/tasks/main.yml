@@ -1,0 +1,88 @@
+---
+
+- include_vars:
+    file: "{{ role_path }}/../postgresql/vars/main.yml" # get db name
+
+- name: "Install python dependence"
+  ansible.builtin.apt: 
+    name: "{{ item }}"
+    update_cache: true
+    state: "present"
+  loop:
+    - python3-virtualenv
+    - python3-pip
+
+- name: "Create project dir"
+  ansible.builtin.file:
+    path: "{{project_name_path}}"
+    state: directory
+    owner: "client_host"
+    group: "client_host"
+    mode: "0755"
+
+- name: "Install django"
+  become: "yes"
+  become_user: "client_host"
+  ansible.builtin.pip:
+    name: "django"
+    virtualenv: "{{project_name_path}}/env"
+    virtualenv_command: "virtualenv"
+    virtualenv_python: "python3"
+
+- name: "Instal python library for PostgreSQL"
+  ansible.builtin.pip:
+    name: "psycopg2"
+    virtualenv: "{{project_name_path}}/env"
+    virtualenv_command: "virtualenv"
+    virtualenv_python: "python3"
+
+- name: "Get stats of a project"
+  ansible.builtin.stat:
+    path: "{{ project_name_path }}/{{ project_name }}"
+  register: st
+
+- name: "Creating a project"
+  become: "yes"
+  become_user: "client_host"
+  shell: "{{ project_name_path }}/env/bin/django-admin.py startproject djangoproject {{ project_name_path }}"
+  when: st.stat.exists == False
+
+- name: "Copy default settings with custome DATABASES settings"
+  ansible.builtin.template:
+    src: "settings.j2"
+    dest: "{{project_name_path}}/{{ project_name }}/settings.py"
+    owner: "client_host"
+    group: "client_host"
+    force: "yes"
+    mode: "0664"
+
+- name: "Make migrate"
+  become: "yes"
+  become_user: "client_host"
+  shell: "{{ project_name_path }}/env/bin/python3 {{ project_name_path }}/manage.py makemigrations"
+
+- name: "Migrate database"
+  become: "yes"
+  become_user: "client_host"
+  django_manage:
+    command: "migrate"
+    app_path: "{{project_name_path}}"
+    virtualenv: "{{project_name_path}}/env"
+
+- name: "Create admin"
+  become: "yes"
+  become_user: "client_host"
+  shell: "DJANGO_SUPERUSER_PASSWORD={{ lookup('env', 'DJANGO_PASSWORD') }} \
+  DJANGO_SUPERUSER_USERNAME={{ lookup('env', 'DJANGO_ADMIN') }} \
+  DJANGO_SUPERUSER_EMAIL={{ lookup('env', 'DJANGO_EMAIL') }} \
+  {{ project_name_path }}/env/bin/python3 {{ project_name_path }}/manage.py createsuperuser \
+  --no-input"
+  failed_when: false
+
+- name: "Get all static files"
+  become: "yes"
+  become_user: "client_host"
+  django_manage:
+    command: "collectstatic"
+    app_path: "{{project_name_path}}"
+    virtualenv: "{{project_name_path}}/env"

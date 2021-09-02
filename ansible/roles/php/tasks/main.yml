@@ -18,5 +18,6 @@
 
 - name: "Start php-fpm"
   ansible.builtin.service:
-    name: php7.4-fpm
-    state: started
+    name: "php7.4-fpm"
+    state: "started"
+    enabled: true

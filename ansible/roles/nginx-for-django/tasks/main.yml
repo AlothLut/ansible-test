@@ -1,0 +1,35 @@
+---
+- include_vars:
+    file: "{{ role_path }}/../django/vars/main.yml"
+
+- name: "Install nginx"
+  ansible.builtin.apt:
+    name: "nginx"
+    state: "present"
+    update-cache: true
+
+- name: "Copy nginx conf"
+  ansible.builtin.template:
+    src: "nginx.j2"
+    dest: "/etc/nginx/sites-available/nginx.conf"
+    owner: "client_host"
+    group: "client_host"
+    mode: "0644"
+  notify: "Restart nginx"
+
+- name: "Unlink default config"
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: "absent"
+
+- name: "Create a symbolic link for nginx config"
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/nginx.conf"
+    dest: "/etc/nginx/sites-enabled/nginx"
+    state: "link"
+
+- name: "Start nginx"
+  ansible.builtin.service:
+    name: "nginx"
+    state: "started"
+    enabled: true

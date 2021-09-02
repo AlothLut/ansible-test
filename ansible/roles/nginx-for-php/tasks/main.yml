@@ -3,10 +3,10 @@
 - name: "Install nginx"
   ansible.builtin.apt:
     name: "nginx"
-    state: "latest"
+    state: "present"
     update-cache: true
 
-- name: "Change /var/www/html ownership, group and permissions"
+- name: "Make dir /var/www/site"
   ansible.builtin.file:
     path: "/var/www/site"
     state: directory
@@ -21,14 +21,21 @@
     owner: "client_host"
     group: "client_host"
     mode: "0644"
+  notify: "Restart nginx"
+
+- name: "Unlink default config"
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: "absent"
 
 - name: "Create a symbolic link for nginx config"
   ansible.builtin.file:
-    src: /etc/nginx/sites-available/nginx-php.conf
-    dest: /etc/nginx/sites-enabled/nginx-php
-    state: link
+    src: "/etc/nginx/sites-available/nginx-php.conf"
+    dest: "/etc/nginx/sites-enabled/nginx-php"
+    state: "link"
 
 - name: "Start nginx"
   ansible.builtin.service:
-    name: nginx
-    state: started
+    name: "nginx"
+    state: "started"
+    enabled: true

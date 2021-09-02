@@ -1,0 +1,14 @@
+#############################################
+# Django with Postgres, Gunicorn, and Nginx #
+#############################################
+
+---
+
+- name: "Install Django stack"
+  hosts: "DJANGO_server"
+  become: "yes"
+  roles:
+    - nginx-for-django
+    - postgresql
+    - django
+    - gunicorn

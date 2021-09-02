@@ -5,6 +5,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     python3 \ 
     sudo \
+    # for set user in ansible tasks install acl
+    acl \
     #remove cache:
     && rm -rf /var/lib/apt/lists/* 
 
@@ -17,4 +19,4 @@ EXPOSE 22
 USER root
 RUN /etc/init.d/ssh start
 
-CMD ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["/usr/sbin/sshd", "-D"]

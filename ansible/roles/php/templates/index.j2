@@ -12,4 +12,6 @@ if ($conn->connect_error) {
 }
 echo "Connected successfully";
 
+echo "Host: {{ ansible_hostname }}";
+
 phpinfo();

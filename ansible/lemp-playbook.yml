@@ -8,6 +8,6 @@
   hosts: "LEMP_server"
   become: "yes"
   roles:
-    - nginx
+    - nginx-for-php
     - mysql
     - php

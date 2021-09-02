@@ -3,7 +3,7 @@
 - name: "Install MYSQL"
   ansible.builtin.apt:
     name: "mysql-server"
-    state: "latest"
+    state: "present"
     update-cache: true
 
 - name: "Install pymysql"
