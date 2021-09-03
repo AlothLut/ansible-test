@@ -11,8 +11,8 @@
     virtualenv_python: "python3"
 
 - name: "Check gunicorn process"
-  shell: ps aux | grep gunicorn
-  register: "checkgunicorn"
+  shell: ps aux | pgrep gunicorn
+  register: checkgunicorn
   ignore_errors: "yes"
   changed_when: false
 
